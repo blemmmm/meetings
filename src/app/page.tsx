@@ -1,6 +1,7 @@
 "use client";
 
 import { DyteMeetingData } from "@/_types/DyteTypes";
+import Navbar from "@/components/custom/Navbar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { createMeetingFormSchema } from "@/schema/schemas";
 import { useDyteStore } from "@/stores/useDyteStore";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -111,66 +113,90 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Dialog
-        open={createMeetingOpen}
-        onOpenChange={(open) => setCreateMeetingOpen(open)}
-      >
-        <DialogTrigger asChild>
-          <Button type="button">Create New Meeting</Button>
-        </DialogTrigger>
-        <DialogContent className="w-96">
-          <DialogHeader>
-            <DialogTitle>Create a Meeting</DialogTitle>
-          </DialogHeader>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleCreateMeeting)}
-              className="space-y-2"
-            >
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Your name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Your email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="meeting_title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="Meeting title" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full">
-                Create
-              </Button>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    </main>
+    <>
+      <Navbar />
+      <main className="h-[calc(100vh-56px)] grid grid-cols-2 p-24 w-screen">
+        <div className="w-full flex flex-col items-start justify-center gap-5 h-full">
+          <h2 className="text-3xl font-semibold text-zinc-800">
+            Empower your collaborations with Meetings
+          </h2>
+          <p className="text-zinc-500">
+            Host meetings anytime, anywhere, and connect with colleagues,
+            friends, or clients effortlessly. You can initiate or join meetings
+            with just a few clicks, making collaboration easy and accessible.
+            Best of all, it&apos;s completely free, so you can focus on what
+            matters most –productive discussions and meaningful connections.
+          </p>
+          <Dialog
+            open={createMeetingOpen}
+            onOpenChange={(open) => setCreateMeetingOpen(open)}
+          >
+            <DialogTrigger asChild>
+              <Button type="button">Create New Meeting</Button>
+            </DialogTrigger>
+            <DialogContent className="w-96">
+              <DialogHeader>
+                <DialogTitle>Create a Meeting</DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(handleCreateMeeting)}
+                  className="space-y-2"
+                >
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Your name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Your email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="meeting_title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Meeting title" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full">
+                    Create
+                  </Button>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <div className="w-full flex flex-col items-center justify-center gap-5 h-full">
+          <Image
+            src="remote.svg"
+            alt="remote"
+            height={400}
+            width={400}
+            className="pointer-events-none"
+          />
+        </div>
+      </main>
+    </>
   );
 }
