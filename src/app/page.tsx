@@ -62,7 +62,7 @@ export default function Home() {
               width: 1280,
               height: 720,
               watermark: {
-                url: "meetings.blem.dev",
+                url: "http://meetings.blem.dev",
                 size: {
                   width: 1,
                   height: 1,
