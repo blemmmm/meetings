@@ -56,13 +56,13 @@ export default function Home() {
           live_stream_on_start: false,
           recording_config: {
             max_seconds: 60,
-            file_name_prefix: "lokal",
+            file_name_prefix: "meetings",
             video_config: {
               codec: "H264",
               width: 1280,
               height: 720,
               watermark: {
-                url: "http://lokal.com.ph",
+                url: "meetings.blem.dev",
                 size: {
                   width: 1,
                   height: 1,
