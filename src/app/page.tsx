@@ -47,7 +47,7 @@ export default function Home() {
     values: z.infer<typeof createMeetingFormSchema>
   ) => {
     try {
-      await fetch("http://localhost:3000/api/create", {
+      await fetch("/api/create", {
         method: "POST",
         body: JSON.stringify({
           title: values.meeting_title,
@@ -102,6 +102,7 @@ export default function Home() {
         .then((res) => res.json())
         .then((data: DyteMeetingData) => {
           setCreateMeetingOpen(false);
+          form.reset();
           // handleJoin(data.data.id, name, "group_call_host", email, data);
         });
     } catch {
