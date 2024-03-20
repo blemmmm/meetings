@@ -1,14 +1,20 @@
 import { DyteMeetingData, DyteParticipantData } from "@/_types/DyteTypes";
 import { useDyteStore } from "../stores/useDyteStore";
 import { z } from "zod";
-import { createMeetingFormSchema } from "@/schema/schemas";
+import {
+  createMeetingFormSchema,
+  joinMeetingFormSchema,
+} from "@/schema/schemas";
 import { useDialogStore } from "@/stores/useDialogStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 export const useMeeting = () => {
-  const { setParticipantData, setMeetingData } = useDyteStore();
-  const { setCreateMeetingOpen } = useDialogStore();
+  const { replace } = useRouter();
+
+  const { setParticipantData } = useDyteStore();
+  const { setCreateMeetingOpen, setJoinMeetingOpen } = useDialogStore();
 
   const createForm = useForm<z.infer<typeof createMeetingFormSchema>>({
     resolver: zodResolver(createMeetingFormSchema),
@@ -16,6 +22,14 @@ export const useMeeting = () => {
       email: "",
       name: "",
       meeting_title: "",
+    },
+  });
+
+  const joinForm = useForm<z.infer<typeof joinMeetingFormSchema>>({
+    resolver: zodResolver(joinMeetingFormSchema),
+    defaultValues: {
+      email: "",
+      name: "",
     },
   });
 
@@ -45,15 +59,10 @@ export const useMeeting = () => {
       .then((res) => res.json())
       .then((data: DyteParticipantData) => {
         setParticipantData(data);
-
-        // if (!fromShare) {
-        //   window.open(`/dyte/meeting?token=${data.data.token}`);
-        // } else {
-        window.location.replace(`/room?token=${data.data.token}`);
-        // }
+        setJoinMeetingOpen(false);
 
         if (createdMeetingdata) {
-          setMeetingData(createdMeetingdata);
+          replace(`/room/${createdMeetingdata.data.id}`);
         }
       });
   };
@@ -135,5 +144,6 @@ export const useMeeting = () => {
     handleJoin,
     handleCreateMeeting,
     createForm,
+    joinForm,
   };
 };
