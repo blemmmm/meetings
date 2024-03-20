@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { useMeeting } from "@/hooks/useMeeting";
 import { useDialogStore } from "@/stores/useDialogStore";
 import { useDyteStore } from "@/stores/useDyteStore";
+import { Analytics } from "@vercel/analytics/next";
 import Image from "next/image";
 
 export default function Home() {
@@ -114,6 +115,7 @@ export default function Home() {
           />
         </div>
       </main>
+      <Analytics />
     </>
   );
 }
