@@ -37,8 +37,7 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import { Check, Link, Video } from "react-feather";
 
 export default function Home() {
-  const { meetingData, participantData, setMeetingData, setParticipantData } =
-    useDyteStore();
+  const { meetingData } = useDyteStore();
   const {
     createMeetingOpen,
     setCreateMeetingOpen,
@@ -60,14 +59,6 @@ export default function Home() {
       return () => clearTimeout(timeout);
     }
   }, [isCopied]);
-
-  useEffect(() => {
-    if (participantData || meetingData) {
-      setMeetingData(undefined);
-      setParticipantData(undefined);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (window) {

@@ -1,3 +1,4 @@
+import { useDyteStore } from "@/stores/useDyteStore";
 import {
   DyteAudioVisualizer,
   DyteAvatar,
@@ -7,6 +8,7 @@ import {
   DyteParticipantsAudio,
   DyteScreenShareToggle,
   DyteScreenshareView,
+  DyteSetupScreen,
   DyteSimpleGrid,
 } from "@dytesdk/react-ui-kit";
 import { useDyteMeeting, useDyteSelector } from "@dytesdk/react-web-core";
@@ -45,6 +47,7 @@ function Grid() {
 
 function Controlbar({ showChat, setShowChat }: ControlbarProps) {
   const { meeting } = useDyteMeeting();
+  const { setMeetingData, setParticipantData } = useDyteStore();
 
   const participants = useDyteSelector((m) => m.participants.joined);
 
@@ -81,6 +84,8 @@ function Controlbar({ showChat, setShowChat }: ControlbarProps) {
     meeting.leaveRoom();
 
     window.location.href = "/";
+    setMeetingData(undefined);
+    setParticipantData(undefined);
   };
 
   return (
@@ -166,11 +171,7 @@ export default function Facetime() {
   }, []);
 
   // if (!roomJoined) {
-  //   return (
-  //     <div className="bg-black text-white w-full h-full flex place-items-center justify-center">
-  //       <p className="text-2xl">You are not in the meeting.</p>
-  //     </div>
-  //   );
+  //   return <DyteSetupScreen meeting={meeting} />;
   // }
 
   return (
