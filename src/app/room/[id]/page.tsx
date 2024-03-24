@@ -34,17 +34,6 @@ const Room = ({ params }: { params: { id: string } }) => {
 
   const meetingId = params.id;
 
-  // const form = useForm({
-  //   initialValues: {
-  //     email: "",
-  //     name: "",
-  //   },
-
-  //   validate: {
-  //     email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
-  //   },
-  // });
-  console.log(participantData);
   useEffect(() => {
     const authToken = participantData?.data?.token;
 

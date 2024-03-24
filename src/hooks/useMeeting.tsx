@@ -9,12 +9,19 @@ import { useDialogStore } from "@/stores/useDialogStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 export const useMeeting = () => {
   const { replace } = useRouter();
+  const { toast } = useToast();
 
-  const { setParticipantData } = useDyteStore();
-  const { setCreateMeetingOpen, setJoinMeetingOpen } = useDialogStore();
+  const { setParticipantData, setMeetingData } = useDyteStore();
+  const {
+    setCreateMeetingOpen,
+    setJoinMeetingOpen,
+    setIsLoading,
+    setIsMeetingLinkOpen,
+  } = useDialogStore();
 
   const createForm = useForm<z.infer<typeof createMeetingFormSchema>>({
     resolver: zodResolver(createMeetingFormSchema),
@@ -68,8 +75,10 @@ export const useMeeting = () => {
   };
 
   const handleCreateMeeting = async (
-    values: z.infer<typeof createMeetingFormSchema>
+    values: z.infer<typeof createMeetingFormSchema>,
+    isForLater?: boolean
   ) => {
+    setIsLoading(true);
     try {
       await fetch("/api/create", {
         method: "POST",
@@ -127,18 +136,95 @@ export const useMeeting = () => {
         .then((data: DyteMeetingData) => {
           setCreateMeetingOpen(false);
           createForm.reset();
-          handleJoin(
-            data.data.id,
-            values.name,
-            "group_call_host",
-            values.email,
-            data
-          );
+          setIsLoading(false);
+
+          if (!isForLater) {
+            handleJoin(
+              data.data.id,
+              values.name,
+              "group_call_host",
+              values.email,
+              data
+            );
+          } else {
+            setMeetingData(data);
+            setIsMeetingLinkOpen(true);
+          }
         });
     } catch {
-      console.log("Error");
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "Cannot create a meeting",
+      });
+      setIsLoading(false);
     }
   };
+
+  // const handleCreateMeetingLink = async (
+  //   values: z.infer<typeof createMeetingFormSchema>
+  // ) => {
+  //   try {
+  //     await fetch("/api/create", {
+  //       method: "POST",
+  //       body: JSON.stringify({
+  //         title: values.meeting_title,
+  //         preferred_region: "ap-southeast-1",
+  //         record_on_start: false,
+  //         live_stream_on_start: false,
+  //         recording_config: {
+  //           max_seconds: 60,
+  //           file_name_prefix: "meetings",
+  //           video_config: {
+  //             codec: "H264",
+  //             width: 1280,
+  //             height: 720,
+  //             watermark: {
+  //               url: "http://meetings.blem.dev",
+  //               size: {
+  //                 width: 1,
+  //                 height: 1,
+  //               },
+  //               position: "left top",
+  //             },
+  //             export_file: true,
+  //             audio_config: {
+  //               codec: "AAC",
+  //               channel: "stereo",
+  //               export_file: true,
+  //             },
+  //             storage_config: {
+  //               type: "aws",
+  //               access_key: "string",
+  //               secret: "string",
+  //               bucket: "string",
+  //               region: "ap-southeast-1",
+  //               path: "string",
+  //               auth_method: "KEY",
+  //               username: "string",
+  //               password: "string",
+  //               host: "string",
+  //               port: 0,
+  //               private_key: "string",
+  //             },
+  //             dyte_bucket_config: {
+  //               enabled: true,
+  //             },
+  //             live_streaming_config: {
+  //               rtmp_url: "rtmp://a.rtmp.youtube.com/live2",
+  //             },
+  //           },
+  //         },
+  //       }),
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data: DyteMeetingData) => {
+  //         createForm.reset();
+  //       });
+  //   } catch {
+  //     console.log("Error");
+  //   }
+  // };
 
   return {
     handleJoin,

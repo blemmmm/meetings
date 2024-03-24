@@ -7,8 +7,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -17,23 +21,55 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import { useMeeting } from "@/hooks/useMeeting";
 import { useDialogStore } from "@/stores/useDialogStore";
 import { useDyteStore } from "@/stores/useDyteStore";
+import { Icon } from "@iconify/react";
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { CopyIcon } from "@radix-ui/react-icons";
 import { Analytics } from "@vercel/analytics/next";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import CopyToClipboard from "react-copy-to-clipboard";
+import { Check, Link, Video } from "react-feather";
 
 export default function Home() {
-  const { createMeetingOpen, setCreateMeetingOpen } = useDialogStore();
+  const { meetingData, participantData, setMeetingData, setParticipantData } =
+    useDyteStore();
+  const {
+    createMeetingOpen,
+    setCreateMeetingOpen,
+    isLoading,
+    meetingLinkOpen,
+    setIsMeetingLinkOpen,
+  } = useDialogStore();
   const { createForm, handleCreateMeeting } = useMeeting();
+  const [isForLater, setIsForlater] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
-  // create and join a meeting
-  // create a link only
+  useEffect(() => {
+    if (isCopied) {
+      const timeout = setTimeout(() => {
+        setIsCopied(false);
+      }, 1000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [isCopied]);
+
+  useEffect(() => {
+    if (participantData || meetingData) {
+      setMeetingData(undefined);
+      setParticipantData(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
       <Navbar />
-      <main className="h-[calc(100vh-56px)] grid grid-cols-2 p-24 w-screen">
+      <div className="h-[calc(100vh-56px)] grid grid-cols-2 p-24 w-screen">
         <div className="w-full flex flex-col items-start justify-center gap-5 h-full">
           <h2 className="text-3xl font-semibold text-zinc-800">
             Empower your collaborations with Meetings
@@ -45,20 +81,48 @@ export default function Home() {
             Best of all, it&apos;s completely free, so you can focus on what
             matters most –productive discussions and meaningful connections.
           </p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button type="button">Create New Meeting</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem
+                className="gap-3 cursor-pointer"
+                onClick={() => {
+                  setCreateMeetingOpen(true);
+                  setIsForlater(false);
+                }}
+              >
+                <Video height={17} /> Start a Meeting
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="gap-3 cursor-pointer"
+                onClick={() => {
+                  setCreateMeetingOpen(true);
+                  setIsForlater(true);
+                }}
+              >
+                <Link height={17} />
+                Create Meeting Link
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Create Meeting Modal */}
           <Dialog
             open={createMeetingOpen}
             onOpenChange={(open) => setCreateMeetingOpen(open)}
           >
-            <DialogTrigger asChild>
-              <Button type="button">Create New Meeting</Button>
-            </DialogTrigger>
             <DialogContent className="w-96">
               <DialogHeader>
                 <DialogTitle>Create a Meeting</DialogTitle>
               </DialogHeader>
               <Form {...createForm}>
                 <form
-                  onSubmit={createForm.handleSubmit(handleCreateMeeting)}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleCreateMeeting(createForm.getValues(), isForLater);
+                  }}
                   className="space-y-2"
                 >
                   <FormField
@@ -97,11 +161,51 @@ export default function Home() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full">
-                    Create
+                  <Button
+                    type="submit"
+                    className="w-full gap-3"
+                    disabled={isLoading}
+                  >
+                    {isLoading && <Icon icon="svg-spinners:270-ring" />} Create
                   </Button>
                 </form>
               </Form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Meeting Link Modal */}
+          <Dialog
+            open={meetingLinkOpen}
+            onOpenChange={(open) => setIsMeetingLinkOpen(open)}
+          >
+            <DialogContent className="w-fiit">
+              <DialogHeader>
+                <DialogTitle>Here&apos;s your Meeting Link</DialogTitle>
+              </DialogHeader>
+              <p className="text-xs">
+                Save this link for later and share this to people you want to
+                join.
+              </p>
+              <div className="flex items-center justify-between gap-1 w-full">
+                <Input
+                  readOnly
+                  value={`${window.location.origin}/room/${meetingData?.data.id}`}
+                />
+                <CopyToClipboard
+                  text={`${window.location.origin}/room/${meetingData?.data.id}`}
+                  onCopy={(_, copied) => {
+                    setIsCopied(copied);
+                  }}
+                >
+                  <Button variant="ghost" title="Copy Link">
+                    {isCopied ? (
+                      <Check color="green" height={16} />
+                    ) : (
+                      <CopyIcon />
+                    )}
+                  </Button>
+                </CopyToClipboard>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
@@ -114,7 +218,7 @@ export default function Home() {
             className="pointer-events-none"
           />
         </div>
-      </main>
+      </div>
       <Analytics />
     </>
   );

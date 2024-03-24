@@ -8,11 +8,10 @@ import {
 } from "@dytesdk/react-ui-kit";
 import { useDyteMeeting, useDyteSelector } from "@dytesdk/react-web-core";
 import { provideDyteDesignSystem } from "@dytesdk/ui-kit";
-import { useEffect } from "react";
 import clsx from "clsx";
-import { Mic, Video, X } from "react-feather";
+import { useEffect } from "react";
 import Draggable from "react-draggable";
-import { useDyteStore } from "@/stores/useDyteStore";
+import { Mic, Video, X } from "react-feather";
 
 function Grid() {
   const { meeting } = useDyteMeeting();
@@ -37,7 +36,6 @@ function Grid() {
 
 function Controlbar() {
   const { meeting } = useDyteMeeting();
-  const { setParticipantData, setMeetingData } = useDyteStore();
 
   const participants = useDyteSelector((m) => m.participants.joined);
 
@@ -66,8 +64,7 @@ function Controlbar() {
 
   const leaveMeeting = () => {
     meeting.leaveRoom();
-    setMeetingData(undefined);
-    // setParticipantData(undefined);
+
     window.location.href = "/";
   };
 
