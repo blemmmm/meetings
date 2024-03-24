@@ -37,7 +37,7 @@ function Grid() {
 
 function Controlbar() {
   const { meeting } = useDyteMeeting();
-  const { setParticipantData } = useDyteStore();
+  const { setParticipantData, setMeetingData } = useDyteStore();
 
   const participants = useDyteSelector((m) => m.participants.joined);
 
@@ -66,7 +66,8 @@ function Controlbar() {
 
   const leaveMeeting = () => {
     meeting.leaveRoom();
-    setParticipantData(undefined);
+    setMeetingData(undefined);
+    // setParticipantData(undefined);
     window.location.href = "/";
   };
 
