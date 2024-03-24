@@ -69,7 +69,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <div className="h-[calc(100vh-56px)] grid grid-cols-2 p-24 w-screen">
+      <main className="h-[calc(100vh-56px)] grid grid-cols-2 p-24 w-screen">
         <div className="w-full flex flex-col items-start justify-center gap-5 h-full">
           <h2 className="text-3xl font-semibold text-zinc-800">
             Empower your collaborations with Meetings
@@ -218,7 +218,7 @@ export default function Home() {
             className="pointer-events-none"
           />
         </div>
-      </div>
+      </main>
       <Analytics />
     </>
   );
