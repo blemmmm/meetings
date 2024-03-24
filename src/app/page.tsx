@@ -29,7 +29,9 @@ import { Icon } from "@iconify/react";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { Analytics } from "@vercel/analytics/next";
+import { headers } from "next/headers";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { Check, Link, Video } from "react-feather";
@@ -47,6 +49,7 @@ export default function Home() {
   const { createForm, handleCreateMeeting } = useMeeting();
   const [isForLater, setIsForlater] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [url, setUrl] = useState("");
 
   useEffect(() => {
     if (isCopied) {
@@ -64,6 +67,12 @@ export default function Home() {
       setParticipantData(undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (window) {
+      setUrl(window.location.origin);
+    }
   }, []);
 
   return (
@@ -187,12 +196,9 @@ export default function Home() {
                 join.
               </p>
               <div className="flex items-center justify-between gap-1 w-full">
-                <Input
-                  readOnly
-                  value={`${window.location.origin}/room/${meetingData?.data.id}`}
-                />
+                <Input readOnly value={`${url}/room/${meetingData?.data.id}`} />
                 <CopyToClipboard
-                  text={`${window.location.origin}/room/${meetingData?.data.id}`}
+                  text={`${url}/room/${meetingData?.data.id}`}
                   onCopy={(_, copied) => {
                     setIsCopied(copied);
                   }}
